@@ -1,8 +1,8 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve, getValidator, querySyntax } from '@feathersjs/schema'
 import type { FromSchema } from '@feathersjs/schema'
-
+import { getValidator, querySyntax, resolve } from '@feathersjs/schema'
 import type { HookContext } from '../../declarations'
+import { timestampDataSchema } from '../../schemas/timestampsSchema'
 import { dataValidator, queryValidator } from '../../validators'
 import type { ProductsService } from './products.class'
 
@@ -11,11 +11,16 @@ export const productsSchema = {
   $id: 'Products',
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'text'],
+  required: ['id', 'name', 'sku'],
   properties: {
     id: { type: 'number' },
 
-    text: { type: 'string' }
+    name: { type: 'string' },
+
+    sku: { type: 'string' },
+
+    metaData: { type: 'object', additionalProperties: true },
+    ...timestampDataSchema.properties
   }
 } as const
 export type Products = FromSchema<typeof productsSchema>
@@ -29,7 +34,7 @@ export const productsDataSchema = {
   $id: 'ProductsData',
   type: 'object',
   additionalProperties: false,
-  required: ['text'],
+  required: ['name', 'sku'],
   properties: {
     ...productsSchema.properties
   }
