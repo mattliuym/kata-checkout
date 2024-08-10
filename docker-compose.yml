@@ -1,0 +1,67 @@
+services:
+  db:
+    container_name: kata-checkout.db
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=kata-supermarket
+      - TZ=Pacific/Auckland
+    volumes:
+      - ./docker/data/mysql:/var/lib/mysql:delegated
+    ports:
+      - 3307:3306
+
+  db_test:
+    container_name: kata-checkout.db_test
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=kata-supermarket-test
+      - TZ=Pacific/Auckland
+    volumes:
+      - ./docker/data/mysql_test:/var/lib/mysql:delegated
+    ports:
+      - 3306:3306
+
+  api:
+    container_name: kata-checkout.api
+    build: ./docker/api
+    depends_on:
+      - db
+    user: node
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./api:/home/node/app
+    ports:
+      - 3030:3030
+    command: "yarn dev"
+
+  adminer:
+    container_name: kata-checkout.adminer
+    image: adminer
+    depends_on:
+      - db
+      - db_test
+    ports:
+      - 8081:8080
+
+volumes:
+  api:
+
+x-mutagen:
+  sync:
+    defaults:
+      symlink:
+        mode: "posix-raw"
+      ignore:
+        vcs: true
+    api:
+      alpha: "./api"
+      beta: "volume://api"
+      mode: "one-way-replica"
+      configurationBeta:
+        permissions:
+          defaultOwner: "id:1000"
+          defaultGroup: "id:1000"
