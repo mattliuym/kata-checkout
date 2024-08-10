@@ -1,15 +1,16 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/client.html
-import { feathers } from '@feathersjs/feathers'
-import type { TransportConnection, Application } from '@feathersjs/feathers'
-import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
+import authenticationClient from '@feathersjs/authentication-client'
+import type { Application, TransportConnection } from '@feathersjs/feathers'
+import { feathers } from '@feathersjs/feathers'
 
-import { productsClient } from './services/products/products.shared'
+import { productsClient, productsPath } from './services/products/products.shared'
+import { ProductsService } from './services/products/products.class'
 export type {
   Products,
   ProductsData,
-  ProductsQuery,
-  ProductsPatch
+  ProductsPatch,
+  ProductsQuery
 } from './services/products/products.shared'
 
 export interface Configuration {
@@ -17,7 +18,7 @@ export interface Configuration {
 }
 
 export interface ServiceTypes {
-  // todo add "products" here
+  products: ProductsService
 }
 
 export type ClientApplication = Application<ServiceTypes, Configuration>

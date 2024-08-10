@@ -14,7 +14,10 @@
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@feathersjs/client": "^5.0.29",
+    "@tanstack/react-query": "^5.51.23",
+    "axios": "^1.7.3",
     "framer-motion": "^11.3.24",
+    "kata-checkout-api": "file:../api",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
