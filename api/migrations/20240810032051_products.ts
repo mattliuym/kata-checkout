@@ -7,6 +7,8 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name').notNullable()
     table.string('sku').notNullable()
     table.json('metaData')
+    table.timestamps(true, true, true)
+    table.timestamp('deletedAt').nullable().defaultTo(null)
   })
 }
 
