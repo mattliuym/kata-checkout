@@ -6,8 +6,6 @@ import { app } from '../src/app'
 
 const port = app.get('port')
 const appUrl = `http://${app.get('host')}:${port}`
-console.log('appUrl:', appUrl)
-console.log('port:', port)
 
 describe('Feathers application tests', () => {
   let server: Server
