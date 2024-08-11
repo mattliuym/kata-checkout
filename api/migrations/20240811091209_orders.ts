@@ -4,7 +4,7 @@ import type { Knex } from 'knex'
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('orders', (table) => {
     table.increments('id')
-    table.enum('status', ['scanning', 'completed']).notNullable()
+    table.enum('status', ['scanning', 'completed']).defaultTo('scanning').notNullable()
     table.decimal('total', 8, 2).defaultTo(0).notNullable()
     table.timestamps(true, true, true)
     table.timestamp('deletedAt').nullable().defaultTo(null)

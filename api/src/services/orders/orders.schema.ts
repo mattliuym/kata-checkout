@@ -33,7 +33,7 @@ export const ordersDataSchema = {
   $id: 'OrdersData',
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'status'],
+  required: [],
   properties: {
     ...ordersSchema.properties
   }

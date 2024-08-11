@@ -1,6 +1,14 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/client.html
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { lineItemsClient } from './services/line-items/line-items.shared'
+export type {
+  LineItems,
+  LineItemsData,
+  LineItemsQuery,
+  LineItemsPatch
+} from './services/line-items/line-items.shared'
+
 import { ordersClient } from './services/orders/orders.shared'
 export type {
   Campaigns,
@@ -26,6 +34,7 @@ import { CampaignsService } from './services/campaigns/campaigns.class'
 import { ProductsService } from './services/products/products.class'
 import { productsClient } from './services/products/products.shared'
 import { OrdersService } from './services/orders/orders.class'
+import { LineItemsService } from './services/line-items/line-items.class'
 
 export interface Configuration {
   connection: TransportConnection<ServiceTypes>
@@ -35,6 +44,7 @@ export interface ServiceTypes {
   products: ProductsService
   campaigns: CampaignsService
   orders: OrdersService
+  'line-items': LineItemsService
 }
 
 export type ClientApplication = Application<ServiceTypes, Configuration>
@@ -60,5 +70,6 @@ export const createClient = <Configuration = any>(
   client.configure(productsClient)
   client.configure(campaignsClient)
   client.configure(ordersClient)
+  client.configure(lineItemsClient)
   return client
 }
