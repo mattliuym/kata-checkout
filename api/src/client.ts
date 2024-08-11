@@ -1,19 +1,22 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/client.html
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
-import { campaignsClient } from './services/campaigns/campaigns.shared'
+import { ordersClient } from './services/orders/orders.shared'
 export type {
   Campaigns,
   CampaignsData,
   CampaignsPatch,
   CampaignsQuery
 } from './services/campaigns/campaigns.shared'
+export type { Orders, OrdersData, OrdersPatch, OrdersQuery } from './services/orders/orders.shared'
 export type {
   Products,
   ProductsData,
   ProductsPatch,
   ProductsQuery
 } from './services/products/products.shared'
+
+import { campaignsClient } from './services/campaigns/campaigns.shared'
 
 import authenticationClient from '@feathersjs/authentication-client'
 import type { Application, TransportConnection } from '@feathersjs/feathers'
@@ -22,6 +25,7 @@ import { feathers } from '@feathersjs/feathers'
 import { CampaignsService } from './services/campaigns/campaigns.class'
 import { ProductsService } from './services/products/products.class'
 import { productsClient } from './services/products/products.shared'
+import { OrdersService } from './services/orders/orders.class'
 
 export interface Configuration {
   connection: TransportConnection<ServiceTypes>
@@ -30,6 +34,7 @@ export interface Configuration {
 export interface ServiceTypes {
   products: ProductsService
   campaigns: CampaignsService
+  orders: OrdersService
 }
 
 export type ClientApplication = Application<ServiceTypes, Configuration>
@@ -54,5 +59,6 @@ export const createClient = <Configuration = any>(
 
   client.configure(productsClient)
   client.configure(campaignsClient)
+  client.configure(ordersClient)
   return client
 }
