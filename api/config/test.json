@@ -1,3 +1,17 @@
 {
-  "port": 8998
+  "host": "localhost",
+  "port": 3031,
+  "public": "./public/",
+  "origins": [
+    "http://localhost:3031"
+  ],
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "mysql": {
+    "client": "mysql2",
+    "connection": "mysql://root:password@db:3306/kata-supermarket",
+    "debug":false
+  }
 }

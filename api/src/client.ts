@@ -4,8 +4,8 @@ import authenticationClient from '@feathersjs/authentication-client'
 import type { Application, TransportConnection } from '@feathersjs/feathers'
 import { feathers } from '@feathersjs/feathers'
 
-import { productsClient, productsPath } from './services/products/products.shared'
 import { ProductsService } from './services/products/products.class'
+import { productsClient } from './services/products/products.shared'
 export type {
   Products,
   ProductsData,
