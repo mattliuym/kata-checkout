@@ -6,6 +6,8 @@ import { timestampDataSchema } from '../../schemas/timestampsSchema'
 import { dataValidator, queryValidator } from '../../validators'
 import type { CampaignsService } from './campaigns.class'
 
+export const type = <const>['specialPrice', 'dollarOff', 'percentageOff']
+
 // Main data model schema
 export const campaignsSchema = {
   $id: 'Campaigns',
@@ -15,7 +17,7 @@ export const campaignsSchema = {
   properties: {
     id: { type: 'number' },
     name: { type: 'string' },
-    type: { type: 'string' },
+    type: { type: 'string', enum: type },
     requiredProductSku: { type: 'string' },
     requiredProductQuantity: { type: 'number' },
     targetProductSku: { type: 'string' },

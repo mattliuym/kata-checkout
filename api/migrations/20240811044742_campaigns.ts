@@ -5,15 +5,17 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('campaigns', (table) => {
     table.increments('id')
     table.string('name').notNullable()
-    table.enum('type', ['specialPrice', 'amountOff', 'percentageOff']).notNullable()
+    table.enum('type', ['specialPrice', 'dollarOff', 'percentageOff']).notNullable()
     table.string('requiredProductSku').references('sku').inTable('products')
     table.integer('requiredProductQuantity')
     table.string('targetProductSku').references('sku').inTable('products')
     table.integer('targetProductQuantity')
     table.decimal('specialPrice', 8, 2)
-    table.integer('amountOff')
+    table.integer('dollarOff')
     table.integer('percentageOff')
-    table.boolean('isActive').defaultTo(true)
+    table.boolean('isActive').defaultTo(true).notNullable()
+    table.timestamps(true, true, true)
+    table.timestamp('deletedAt').nullable().defaultTo(null)
   })
 }
 
