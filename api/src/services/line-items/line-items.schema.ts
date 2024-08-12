@@ -18,9 +18,9 @@ export const lineItemsSchema = {
     orderId: { type: 'number' },
     productSku: { type: 'string' },
     quantity: { type: 'number' },
-    price: { type: 'number' },
-    discount: { type: 'number' },
-    total: { type: 'number' },
+    price: { type: 'string' },
+    discount: { type: 'string' },
+    total: { type: 'string' },
     ...timestampDataSchema.properties
   }
 } as const
@@ -49,7 +49,7 @@ export const lineItemsPatchSchema = {
   $id: 'LineItemsPatch',
   type: 'object',
   additionalProperties: false,
-  required: ['orderId', 'productSku', 'quantity'],
+  required: ['total', 'quantity'],
   properties: {
     ...lineItemsSchema.properties
   }

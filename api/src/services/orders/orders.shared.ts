@@ -1,41 +1,38 @@
-// For more information about this file see https://dove.feathersjs.com/guides/cli/service.shared.html
-import type { Params } from "@feathersjs/feathers"
-import type { ClientApplication } from "../../client"
+import type { ClientApplication } from '../../client'
 import type {
   Orders,
   OrdersData,
+  OrdersParams,
   OrdersPatch,
   OrdersQuery,
-  OrdersService,
-} from "./orders.class"
+  OrdersService
+} from './orders.class'
 
 export type { Orders, OrdersData, OrdersPatch, OrdersQuery }
 
-export type OrdersClientService = Pick<
-  OrdersService<Params<OrdersQuery>>,
-  (typeof ordersMethods)[number]
->
+export type OrdersClientService = OrdersService<OrdersParams>
 
-export const ordersPath = "orders"
+export const ordersPath = 'orders'
 
-export const ordersMethods: Array<keyof OrdersService> = [
-  "find",
-  "get",
-  "create",
-  "patch",
-  "remove",
+export const ordersMethods: Array<keyof OrdersService<OrdersParams>> = [
+  'find',
+  'get',
+  'create',
+  'patch',
+  'remove',
+  'scan'
 ]
 
 export const ordersClient = (client: ClientApplication) => {
-  const connection = client.get("connection")
+  const connection = client.get('connection')
 
   client.use(ordersPath, connection.service(ordersPath), {
-    methods: ordersMethods,
+    methods: ordersMethods
   })
 }
 
 // Add this service to the client service type index
-declare module "../../client" {
+declare module '../../client' {
   interface ServiceTypes {
     [ordersPath]: OrdersClientService
   }

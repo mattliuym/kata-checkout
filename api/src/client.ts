@@ -3,19 +3,17 @@ import type { AuthenticationClientOptions } from '@feathersjs/authentication-cli
 
 import { lineItemsClient } from './services/line-items/line-items.shared'
 export type {
-  LineItems,
-  LineItemsData,
-  LineItemsQuery,
-  LineItemsPatch
-} from './services/line-items/line-items.shared'
-
-import { ordersClient } from './services/orders/orders.shared'
-export type {
   Campaigns,
   CampaignsData,
   CampaignsPatch,
   CampaignsQuery
 } from './services/campaigns/campaigns.shared'
+export type {
+  LineItems,
+  LineItemsData,
+  LineItemsPatch,
+  LineItemsQuery
+} from './services/line-items/line-items.shared'
 export type { Orders, OrdersData, OrdersPatch, OrdersQuery } from './services/orders/orders.shared'
 export type {
   Products,
@@ -24,6 +22,8 @@ export type {
   ProductsQuery
 } from './services/products/products.shared'
 
+import { ordersClient } from './services/orders/orders.shared'
+
 import { campaignsClient } from './services/campaigns/campaigns.shared'
 
 import authenticationClient from '@feathersjs/authentication-client'
@@ -31,10 +31,10 @@ import type { Application, TransportConnection } from '@feathersjs/feathers'
 import { feathers } from '@feathersjs/feathers'
 
 import { CampaignsService } from './services/campaigns/campaigns.class'
+import { LineItemsService } from './services/line-items/line-items.class'
+import { OrdersService } from './services/orders/orders.class'
 import { ProductsService } from './services/products/products.class'
 import { productsClient } from './services/products/products.shared'
-import { OrdersService } from './services/orders/orders.class'
-import { LineItemsService } from './services/line-items/line-items.class'
 
 export interface Configuration {
   connection: TransportConnection<ServiceTypes>
@@ -43,7 +43,7 @@ export interface Configuration {
 export interface ServiceTypes {
   products: ProductsService
   campaigns: CampaignsService
-  orders: OrdersService
+  orders: OrdersService // todo: how to add custom method?
   'line-items': LineItemsService
 }
 

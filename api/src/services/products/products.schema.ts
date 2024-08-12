@@ -14,11 +14,9 @@ export const productsSchema = {
   required: ['id', 'name', 'sku'],
   properties: {
     id: { type: 'number' },
-
     name: { type: 'string' },
-
     sku: { type: 'string' },
-
+    price: { type: 'string' },
     metaData: { type: 'object', additionalProperties: true },
     ...timestampDataSchema.properties
   }
