@@ -11,7 +11,7 @@ export const productsSchema = {
   $id: 'Products',
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'name', 'sku'],
+  required: ['id', 'name', 'sku', 'price'],
   properties: {
     id: { type: 'number' },
     name: { type: 'string' },

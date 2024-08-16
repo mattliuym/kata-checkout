@@ -6,6 +6,8 @@ import { KnexService } from '@feathersjs/knex'
 import type { Application } from '../../declarations'
 import type { Orders, OrdersData, OrdersPatch, OrdersQuery } from './orders.schema'
 import { ScanPayload } from './orders.types'
+import { BadRequest } from '@feathersjs/errors'
+import { CalculateSpecialPrice } from './orders.helper'
 
 export type { Orders, OrdersData, OrdersPatch, OrdersQuery }
 
@@ -35,8 +37,24 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
     const order = await this.get(id)
 
     if (!order) {
-      throw new Error('Order not found')
+      throw new BadRequest('Order not found')
     }
+
+    const productResults = await this.app.service('products').find({ query: { sku: productSku, $limit: 1 } })
+
+    if (productResults.total === 0) {
+      throw new BadRequest('Product not found')
+    }
+    const product = productResults.data[0]
+
+    const campaignResult = await this.app.service('campaigns').find({
+      query: {
+        requiredProductSku: productSku,
+        isActive: true
+      }
+    })
+
+    const campaign = campaignResult.total > 0 ? campaignResult.data[0] : null
 
     // check if line item exists by productSku
     const lineItemResult = await this.app
@@ -48,27 +66,26 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
       const lineItem = lineItemResult.data[0]
       const quantity = lineItem.quantity + 1
       const total = quantity * Number(lineItem.price)
-      // todo add calculate special prices
+      // todo add calculate campaign discount
+      if (campaign && campaign.type === 'specialPrice') {
+        const newTotal = CalculateSpecialPrice({
+          productPrice: product.price,
+          currentQuantity: quantity,
+          requiredQuantity: campaign.requiredProductQuantity,
+          specialPrice: campaign.specialPrice
+        })
+      }
+
       await this.app.service('line-items').patch(
         lineItem.id,
         {
           quantity,
-          total: total.toString()
+          total: total.toFixed(2)
         },
         { query: { orderId: id, productSku } }
       )
     } else {
       // add create new line item
-      const productResults = await this.app
-        .service('products')
-        .find({ query: { sku: productSku, $limit: 1 } })
-
-      if (productResults.total === 0) {
-        throw new Error('Product not found')
-      }
-
-      const product = productResults.data[0]
-      console.log('product???', product)
       // todo add calculate discount
       await this.app.service('line-items').create({
         orderId: id,
