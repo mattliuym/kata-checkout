@@ -3,11 +3,12 @@ import type { Params } from '@feathersjs/feathers'
 import type { KnexAdapterOptions, KnexAdapterParams } from '@feathersjs/knex'
 import { KnexService } from '@feathersjs/knex'
 
+import { BadRequest } from '@feathersjs/errors'
 import type { Application } from '../../declarations'
 import type { Orders, OrdersData, OrdersPatch, OrdersQuery } from './orders.schema'
-import { ScanPayload } from './orders.types'
-import { BadRequest } from '@feathersjs/errors'
+import { CalculateCampaign, ScanPayload } from './orders.types'
 import { CalculateSpecialPrice } from './orders.helper'
+import { SpecialPriceCampaign } from '../campaigns/campaigns.types'
 
 export type { Orders, OrdersData, OrdersPatch, OrdersQuery }
 
@@ -31,8 +32,8 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
     this.app = options.app
   }
 
-  async scan(id: number, data: ScanPayload, params?: OrdersParams): Promise<Orders> {
-    const { productSku } = data
+  async scan(data: ScanPayload, params?: OrdersParams): Promise<Orders> {
+    const { id, productSku } = data
 
     const order = await this.get(id)
 
@@ -47,14 +48,7 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
     }
     const product = productResults.data[0]
 
-    const campaignResult = await this.app.service('campaigns').find({
-      query: {
-        requiredProductSku: productSku,
-        isActive: true
-      }
-    })
-
-    const campaign = campaignResult.total > 0 ? campaignResult.data[0] : null
+    const campaign = await this.getActiveCampaigns(productSku)
 
     // check if line item exists by productSku
     const lineItemResult = await this.app
@@ -62,26 +56,24 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
       .find({ query: { orderId: id, productSku, $limit: 1 } })
     const hasLineItem = lineItemResult.total > 0
 
+    let newQuantity = 1
+    let total: string
+
     if (hasLineItem) {
       const lineItem = lineItemResult.data[0]
-      const quantity = lineItem.quantity + 1
+      newQuantity = lineItem.quantity + 1
 
-      let total = (quantity * Number(lineItem.price)).toFixed(2)
-      // todo add calculate campaign discount
-      if (campaign && campaign.type === 'specialPrice') {
-        total = CalculateSpecialPrice({
-          productPrice: product.price,
-          currentQuantity: quantity,
-          requiredQuantity: campaign.requiredProductQuantity,
-          specialPrice: campaign.specialPrice
-        })
-      }
+      total = this.calculateLineItemTotal({
+        quantity: newQuantity,
+        price: product.price,
+        campaign
+      })
 
       await this.app.service('line-items').patch(
         lineItem.id,
         {
-          quantity,
-          total: total
+          quantity: newQuantity,
+          total
         },
         { query: { orderId: id, productSku } }
       )
@@ -98,6 +90,41 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
     }
 
     return order
+  }
+
+  private async getActiveCampaigns(productSku: string) {
+    const campaignResult = await this.app.service('campaigns').find({
+      query: {
+        requiredProductSku: productSku,
+        isActive: true,
+        $limit: 1
+      }
+    })
+    return campaignResult.total > 0 ? campaignResult.data[0] : null
+  }
+
+  private calculateLineItemTotal(params: CalculateCampaign): string {
+    const { campaign, quantity, price } = params
+
+    let total = (quantity * parseFloat(price)).toFixed(2)
+
+    if (!campaign) {
+      return total
+    }
+
+    switch (campaign.type) {
+      case 'specialPrice':
+        if (quantity >= campaign.requiredProductQuantity!) {
+          total = CalculateSpecialPrice({
+            quantity,
+            price,
+            campaign: campaign as SpecialPriceCampaign
+          })
+        }
+        break
+    }
+
+    return total
   }
 }
 

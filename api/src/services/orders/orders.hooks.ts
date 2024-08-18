@@ -6,7 +6,7 @@ export const updateTotalPrice = async (context: HookContext) => {
 
   const lineItems = await app.service('line-items').find({
     query: {
-      orderId: data
+      orderId: data.id
     }
   })
 
@@ -14,7 +14,7 @@ export const updateTotalPrice = async (context: HookContext) => {
     return acc + Number(lineItem.total)
   }, 0)
 
-  const updatedOrder = await app.service('orders').patch(data, { id: data, total: total.toString() })
+  const updatedOrder = await app.service('orders').patch(data.id, { total: total.toString() })
 
   context.result = updatedOrder
   return context

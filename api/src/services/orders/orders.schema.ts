@@ -1,11 +1,11 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import type { FromSchema } from '@feathersjs/schema'
-import { getValidator, querySyntax, resolve, virtual } from '@feathersjs/schema'
+import { getValidator, querySyntax, resolve } from '@feathersjs/schema'
 
 import type { HookContext } from '../../declarations'
 import { timestampDataSchema } from '../../schemas/timestampsSchema'
 import { dataValidator, queryValidator } from '../../validators'
-import { LineItems, lineItemsSchema } from '../line-items/line-items.schema'
+import { LineItems } from '../line-items/line-items.schema'
 import type { OrdersService } from './orders.class'
 
 export const status = <const>['scanning', 'completed']

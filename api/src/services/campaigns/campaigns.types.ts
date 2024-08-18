@@ -4,7 +4,7 @@ export interface SpecialPriceCampaign {
   name: string
   requiredProductSku: string
   requiredProductQuantity: number
-  specialPrice: number
+  specialPrice: string
 }
 
 export interface DollarOffCampaign {

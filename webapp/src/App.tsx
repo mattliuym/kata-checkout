@@ -1,20 +1,26 @@
-import { Box, Button } from "@chakra-ui/react"
+import { Button, VStack } from "@chakra-ui/react"
+import { Orders } from "kata-checkout-api"
+import { useState } from "react"
 import "./App.css"
-import { client } from "./services/feathers"
 import ProductList from "./components/ProductList"
+import { client } from "./services/feathers"
 
 interface Props {}
 
 const App: React.FC<Props> = () => {
+  const [order, setOrder] = useState<Orders>()
+
   const clickButton = async () => {
-    const result = await client.service("products").get(1)
-    console.log("result==>", result)
+    const newOrder = await client.service("orders").create({})
+
+    setOrder(newOrder)
   }
+
   return (
-    <Box>
-      <Button onClick={clickButton}>Click me</Button>
-      <ProductList />
-    </Box>
+    <VStack spacing={12}>
+      <Button onClick={clickButton}>Start Scan</Button>
+      {order && <ProductList order={order} setOrder={setOrder} />}
+    </VStack>
   )
 }
 

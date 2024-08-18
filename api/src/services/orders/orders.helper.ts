@@ -1,14 +1,12 @@
 import { SpecialPrice } from './orders.types'
 
 export const CalculateSpecialPrice = (params: SpecialPrice): string => {
-  const { requiredQuantity = 1, currentQuantity } = params
+  const { quantity, price, campaign } = params
 
-  const productPrice = parseFloat(params.productPrice)
-  const specialPrice = parseFloat(`${params.specialPrice ?? productPrice * requiredQuantity}`)
+  const fullSets = Math.floor(quantity / campaign.requiredProductQuantity!)
+  const remainder = quantity % campaign.requiredProductQuantity!
+  const specialPrice = parseFloat(campaign.specialPrice!)
+  const regularPrice = parseFloat(price)
 
-  const remainder = currentQuantity % requiredQuantity
-  const fullSets = Math.floor(params.currentQuantity / requiredQuantity)
-  const newTotal = (fullSets * specialPrice + remainder * productPrice).toFixed(2)
-
-  return newTotal
+  return (fullSets * specialPrice + remainder * regularPrice).toFixed(2)
 }

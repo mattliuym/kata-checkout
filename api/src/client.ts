@@ -43,7 +43,7 @@ export interface Configuration {
 export interface ServiceTypes {
   products: ProductsService
   campaigns: CampaignsService
-  orders: OrdersService // todo: how to add custom method?
+  orders: OrdersService
   'line-items': LineItemsService
 }
 

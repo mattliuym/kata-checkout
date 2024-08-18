@@ -43,7 +43,7 @@ describe('orders service', () => {
 
     //await service.scan(order.id, { productSku: 'B' })
 
-    const result = await service.scan(order.id, { productSku: 'B' })
+    const result = await service.scan({ id: order.id, productSku: 'B' })
 
     console.log('result==>', result)
 
