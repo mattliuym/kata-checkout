@@ -1,6 +1,6 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import type { FromSchema } from '@feathersjs/schema'
-import { getValidator, querySyntax, resolve } from '@feathersjs/schema'
+import { getValidator, querySyntax, resolve, virtual } from '@feathersjs/schema'
 
 import type { HookContext } from '../../declarations'
 import { timestampDataSchema } from '../../schemas/timestampsSchema'
@@ -15,7 +15,7 @@ export const ordersSchema = {
   $id: 'Orders',
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'status'], // todo may need total?
+  required: ['id', 'status'],
   properties: {
     id: { type: 'number' },
     status: { type: 'string', enum: status },
@@ -23,9 +23,20 @@ export const ordersSchema = {
     ...timestampDataSchema.properties
   }
 } as const
-export type Orders = FromSchema<typeof ordersSchema>
+export type Orders = FromSchema<typeof ordersSchema> & { lineItems?: LineItems[] }
 export const ordersValidator = getValidator(ordersSchema, dataValidator)
-export const ordersResolver = resolve<Orders, HookContext<OrdersService>>({})
+export const ordersResolver = resolve<Orders, HookContext<OrdersService>>({
+  lineItems: async (_value, order, context) => {
+    // Add the line items to the response
+    const lineItemsResult = await context.app.service('line-items').find({
+      query: {
+        orderId: order.id // Assuming `orderId` is the foreign key in `line-items` table
+      }
+    })
+
+    return lineItemsResult.data
+  }
+})
 
 export const ordersExternalResolver = resolve<Orders, HookContext<OrdersService>>({})
 
@@ -36,50 +47,25 @@ export const ordersDataSchema = {
   additionalProperties: false,
   required: [],
   properties: {
-    ...ordersSchema.properties,
-    lineItems: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        required: [],
-        properties: {
-          ...lineItemsSchema.properties
-        }
-      }
-    }
+    ...ordersSchema.properties
   }
 } as const
-export type OrdersData = FromSchema<typeof ordersDataSchema> & { items: LineItems[] }
+export type OrdersData = FromSchema<typeof ordersDataSchema>
 export const ordersDataValidator = getValidator(ordersDataSchema, dataValidator)
-export const ordersDataResolver = resolve<OrdersData, HookContext<OrdersService>>({
-  total: async (value) => {
-    // Format the total as a string with currency formatting
-    return parseFloat(value ?? '').toFixed(2)
-  },
-  lineItems: async (_value, order, context) => {
-    // Add the line items to the response
-    const lineItemsResult = await context.app.service('line-items').find({
-      query: {
-        orderId: order.id // Assuming `orderId` is the foreign key in `line-items` table
-      }
-    })
-    return lineItemsResult.data
-  }
-})
+export const ordersDataResolver = resolve<OrdersData, HookContext<OrdersService>>({})
 
 // Schema for updating existing data
 export const ordersPatchSchema = {
   $id: 'OrdersPatch',
   type: 'object',
   additionalProperties: false,
-  required: ['id'],
+  required: [],
   properties: {
     ...ordersSchema.properties
   }
 } as const
 
-export type OrdersPatch = FromSchema<typeof ordersPatchSchema> & { items: LineItems[] }
+export type OrdersPatch = FromSchema<typeof ordersPatchSchema> & { lineItems?: LineItems[] }
 
 export const ordersPatchValidator = getValidator(ordersPatchSchema, dataValidator)
 export const ordersPatchResolver = resolve<OrdersPatch, HookContext<OrdersService>>({})

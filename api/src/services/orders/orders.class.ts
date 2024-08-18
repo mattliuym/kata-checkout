@@ -65,10 +65,11 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
     if (hasLineItem) {
       const lineItem = lineItemResult.data[0]
       const quantity = lineItem.quantity + 1
-      const total = quantity * Number(lineItem.price)
+
+      let total = (quantity * Number(lineItem.price)).toFixed(2)
       // todo add calculate campaign discount
       if (campaign && campaign.type === 'specialPrice') {
-        const newTotal = CalculateSpecialPrice({
+        total = CalculateSpecialPrice({
           productPrice: product.price,
           currentQuantity: quantity,
           requiredQuantity: campaign.requiredProductQuantity,
@@ -80,7 +81,7 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
         lineItem.id,
         {
           quantity,
-          total: total.toFixed(2)
+          total: total
         },
         { query: { orderId: id, productSku } }
       )
