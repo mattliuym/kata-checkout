@@ -119,4 +119,4 @@ dist
 .sqlite
 
 lib/
-config/local.json
+config/development.json

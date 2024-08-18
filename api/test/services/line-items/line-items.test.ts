@@ -2,18 +2,18 @@
 import assert from 'assert'
 import { app } from '../../../src/app'
 
-describe('products service', () => {
+describe('line-items service', () => {
   it('registered the service', () => {
-    const service = app.service('products')
+    const service = app.service('line-items')
 
     assert.ok(service, 'Registered the service')
   })
 
-  it('get first product', async () => {
-    const service = app.service('products')
+  it('test line-items service', async () => {
+    const service = app.service('line-items')
 
-    const products = await service.find()
+    const result = await service.find()
 
-    assert.ok(products, 'Products found')
+    assert.ok(result, 'line-items service working')
   })
 })

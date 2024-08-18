@@ -11,14 +11,12 @@ export const productsSchema = {
   $id: 'Products',
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'name', 'sku'],
+  required: ['id', 'name', 'sku', 'price'],
   properties: {
     id: { type: 'number' },
-
     name: { type: 'string' },
-
     sku: { type: 'string' },
-
+    price: { type: 'string' },
     metaData: { type: 'object', additionalProperties: true },
     ...timestampDataSchema.properties
   }
