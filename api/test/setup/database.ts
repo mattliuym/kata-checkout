@@ -29,11 +29,11 @@ export const testProducts: Partial<Products>[] = [
 export const specialPriceCampaign: Partial<Campaigns>[] = [
   {
     id: 1,
-    name: 'Buy 3 for $2',
+    name: 'Buy 3 for $2.5',
     type: 'specialPrice',
     requiredProductSku: 'A',
     requiredProductQuantity: 3,
-    specialPrice: '2.00',
+    specialPrice: '2.50',
     isActive: true
   },
   {
