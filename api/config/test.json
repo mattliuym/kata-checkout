@@ -11,7 +11,7 @@
   },
   "mysql": {
     "client": "mysql2",
-    "connection": "mysql://root:password@localhost:3307/kata-supermarket",
+    "connection": "mysql://root:password@localhost:3306/kata-supermarket-test",
     "debug":false
   }
 }

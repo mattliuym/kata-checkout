@@ -2,7 +2,7 @@
 import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.createTable('line-items', (table) => {
+  await knex.schema.createTable('line_items', (table) => {
     table.increments('id')
     table.integer('orderId').unsigned().references('id').inTable('orders').notNullable()
     table.string('productSku').references('sku').inTable('products').notNullable()
@@ -16,5 +16,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTable('line-items')
+  await knex.schema.dropTable('line_items')
 }
