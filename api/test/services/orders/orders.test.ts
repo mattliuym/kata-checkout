@@ -1,6 +1,7 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.test.html
 import assert from 'assert'
 import { app } from '../../../src/app'
+import { scanner } from '../../helpers/scanner'
 
 describe('orders service', () => {
   it('registered the service', () => {
@@ -9,7 +10,7 @@ describe('orders service', () => {
     assert.ok(service, 'Registered the service')
   })
 
-  it('create/finish an order', async () => {
+  it('create and finish an order', async () => {
     const service = app.service('orders')
 
     const order = await service.create({})
@@ -18,48 +19,96 @@ describe('orders service', () => {
     assert.strictEqual(order.total, '0.00')
 
     const oderComplete = await service.patch(order.id, { status: 'completed' })
-    console.log('orderComplete==>', oderComplete)
+
     assert.strictEqual(oderComplete.status, 'completed')
     assert.strictEqual(oderComplete.total, '0.00')
   })
 
-  // it('add line item B', async () => {
-  //   const service = app.service('orders')
+  it('scan item AABC', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
 
-  //   const order = await service.get(5) // use a fix order id for now
+    const result = await service.scan({ id: order.id, productSku: 'A' })
+    const result1 = await service.scan({ id: order.id, productSku: 'A' })
+    const result2 = await service.scan({ id: order.id, productSku: 'B' })
+    const result3 = await service.scan({ id: order.id, productSku: 'C' })
 
-  //   const result = await service.scan(5, { productSku: 'B' })
+    const orderComplete = await service.patch(order.id, { status: 'completed' })
 
-  //   console.log('result==>', result)
+    assert.strictEqual(result.total, '1.00')
+    assert.strictEqual(result1.total, '2.00')
+    assert.strictEqual(result2.total, '4.00')
+    assert.strictEqual(result3.total, '7.00')
 
-  //   // assert.strictEqual(lineItem.quantity, 1)
-  //   // assert.strictEqual(lineItem.total, 30)
-  // })
+    assert.equal(orderComplete.total, '7.00')
+    assert.equal(orderComplete.status, 'completed')
+  })
 
-  // it('Scan two line item B', async () => {
-  //   const service = app.service('orders')
+  it('scan item AAAB', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
 
-  //   const order = await service.get(1) // use a fix order id for now
+    const result = await service.scan({ id: order.id, productSku: 'A' })
+    const result1 = await service.scan({ id: order.id, productSku: 'A' })
+    const result2 = await service.scan({ id: order.id, productSku: 'A' })
+    const result3 = await service.scan({ id: order.id, productSku: 'B' })
 
-  //   //await service.scan(order.id, { productSku: 'B' })
+    const orderComplete = await service.patch(order.id, { status: 'completed' })
 
-  //   const result = await service.scan({ id: order.id, productSku: 'B' })
+    assert.strictEqual(result.total, '1.00')
+    assert.strictEqual(result1.total, '2.00')
+    assert.strictEqual(result2.total, '2.50')
+    assert.strictEqual(result3.total, '4.50')
 
-  //   console.log('result==>', result)
+    assert.strictEqual(orderComplete.total, '4.50')
+    assert.strictEqual(orderComplete.status, 'completed')
+  })
 
-  //   assert.strictEqual(lineItem.quantity, 1)
-  //   assert.strictEqual(lineItem.total, 30)
-  // })
+  it('scan item ABACCCBBA', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
 
-  // it('Complete order', async () => {
-  //   const service = app.service('orders')
+    const result = await service.scan({ id: order.id, productSku: 'A' })
+    const result1 = await service.scan({ id: order.id, productSku: 'B' })
+    const result2 = await service.scan({ id: order.id, productSku: 'A' })
+    const result3 = await service.scan({ id: order.id, productSku: 'C' })
+    const result4 = await service.scan({ id: order.id, productSku: 'C' })
+    const result5 = await service.scan({ id: order.id, productSku: 'C' })
+    const result6 = await service.scan({ id: order.id, productSku: 'B' })
+    const result7 = await service.scan({ id: order.id, productSku: 'B' })
+    const result8 = await service.scan({ id: order.id, productSku: 'A' })
 
-  //   const order = await service.get(1) // use a fix order id for now
+    const orderComplete = await service.patch(order.id, { status: 'completed' })
 
-  //   const result = await service.patch(order.id, { status: 'completed' })
+    assert.strictEqual(result.total, '1.00')
+    assert.strictEqual(result1.total, '3.00')
+    assert.strictEqual(result2.total, '4.00')
+    assert.strictEqual(result3.total, '7.00')
+    assert.strictEqual(result4.total, '10.00')
+    assert.strictEqual(result5.total, '13.00')
+    assert.strictEqual(result6.total, '14.00')
+    assert.strictEqual(result7.total, '16.00')
+    assert.strictEqual(result8.total, '16.50')
 
-  //   console.log('result==>', result)
+    assert.strictEqual(orderComplete.total, '16.50')
+    assert.strictEqual(orderComplete.status, 'completed')
+  })
 
-  //   assert.strictEqual(result.status, 'completed')
-  // })
+  it('scan item AAA altogether', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
+
+    const orderResult = await scanner(service, 'AAA', order.id)
+
+    assert.strictEqual(orderResult.total, '2.50')
+  })
+
+  it('scan item ABACCCBBA altogether', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
+
+    const orderResult = await scanner(service, 'ABACCCBBA', order.id)
+
+    assert.strictEqual(orderResult.total, '16.50')
+  })
 })
