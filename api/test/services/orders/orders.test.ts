@@ -111,4 +111,31 @@ describe('orders service', () => {
 
     assert.strictEqual(orderResult.total, '16.50')
   })
+
+  it('scan item DDDDDDD', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
+
+    const orderResult = await scanner(service, 'DDDDDDD', order.id)
+
+    assert.strictEqual(orderResult.total, '26.50')
+  })
+
+  it('scan item DDDDDDDD', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
+
+    const orderResult = await scanner(service, 'DDDDDDDD', order.id)
+
+    assert.strictEqual(orderResult.total, '29.00')
+  })
+
+  it('scan item EEEEEE', async () => {
+    const service = app.service('orders')
+    const order = await service.create({})
+
+    const orderResult = await scanner(service, 'EEEEEE', order.id)
+
+    assert.strictEqual(orderResult.total, '15.00')
+  })
 })

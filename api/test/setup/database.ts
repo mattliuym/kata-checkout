@@ -4,7 +4,6 @@ import { Products } from '../../src/services/products/products'
 
 export const testProducts: Partial<Products>[] = [
   {
-    id: 1,
     name: 'Apple',
     sku: 'A',
     price: '1.00',
@@ -13,22 +12,29 @@ export const testProducts: Partial<Products>[] = [
     }
   },
   {
-    id: 2,
     name: 'Banana',
     sku: 'B',
     price: '2.00'
   },
   {
-    id: 3,
     name: 'Cherry',
     sku: 'C',
+    price: '3.00'
+  },
+  {
+    name: 'Durian',
+    sku: 'D',
+    price: '4.00'
+  },
+  {
+    name: 'Elderberry',
+    sku: 'E',
     price: '3.00'
   }
 ]
 
 export const specialPriceCampaign: Partial<Campaigns>[] = [
   {
-    id: 1,
     name: 'Buy 3 for $2.5',
     type: 'specialPrice',
     requiredProductSku: 'A',
@@ -37,7 +43,6 @@ export const specialPriceCampaign: Partial<Campaigns>[] = [
     isActive: true
   },
   {
-    id: 2,
     name: 'Buy 2 for $3',
     type: 'specialPrice',
     requiredProductSku: 'B',
@@ -46,13 +51,29 @@ export const specialPriceCampaign: Partial<Campaigns>[] = [
     isActive: true
   },
   {
-    id: 3,
     name: 'Buy 1 for $2',
     type: 'specialPrice',
     requiredProductSku: 'C',
     requiredProductQuantity: 1,
     specialPrice: '2.00',
     isActive: false
+  },
+
+  {
+    name: 'Buy 3 for get 1 $1.50 off',
+    type: 'dollarOff',
+    requiredProductSku: 'D',
+    requiredProductQuantity: 3,
+    dollarOff: '1.50',
+    isActive: true
+  },
+  {
+    name: '50 cent off',
+    type: 'dollarOff',
+    requiredProductSku: 'E',
+    requiredProductQuantity: 0,
+    dollarOff: '0.50',
+    isActive: true
   }
 ]
 

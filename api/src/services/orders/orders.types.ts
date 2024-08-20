@@ -1,4 +1,4 @@
-import { Campaigns } from '../campaigns/campaigns.schema'
+import { Campaigns } from '../campaigns/campaigns'
 import { DollarOffCampaign, PercentageOffCampaign, SpecialPriceCampaign } from '../campaigns/campaigns.types'
 
 export interface ScanPayload {
@@ -12,21 +12,14 @@ export interface CalculateCampaign {
   campaign: Campaigns | null
 }
 
-export interface SpecialPrice {
-  quantity: number
-  price: string
+export interface SpecialPrice extends CalculateCampaign {
   campaign: SpecialPriceCampaign
 }
 
-// todo: TBC
-export interface DollarOff {
-  quantity: number
-  price: string
+export interface DollarOff extends CalculateCampaign {
   campaign: DollarOffCampaign
 }
 
-export interface PercentageOff {
-  quantity: number
-  price: string
+export interface PercentageOff extends CalculateCampaign {
   campaign: PercentageOffCampaign
 }

@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('targetProductSku').references('sku').inTable('products')
     table.integer('targetProductQuantity')
     table.decimal('specialPrice', 8, 2)
-    table.integer('dollarOff')
+    table.decimal('dollarOff', 8, 2)
     table.integer('percentageOff')
     table.boolean('isActive').defaultTo(true).notNullable()
     table.timestamps(true, true, true)
