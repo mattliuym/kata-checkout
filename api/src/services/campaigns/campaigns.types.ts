@@ -13,9 +13,9 @@ export interface DollarOffCampaign {
   name: string
   requiredProductSku: string
   requiredProductQuantity: number
-  targetProductSku: string
-  targetProductQuantity: number
-  dollarOff: number
+  // targetProductSku: string
+  // targetProductQuantity: number
+  dollarOff: string
 }
 
 export interface PercentageOffCampaign {
@@ -24,7 +24,7 @@ export interface PercentageOffCampaign {
   name: string
   requiredProductSku: string
   requiredProductQuantity: number
-  targetProductSku: string
-  targetProductQuantity: number
+  // targetProductSku: string
+  // targetProductQuantity: number
   percentageOff: number
 }

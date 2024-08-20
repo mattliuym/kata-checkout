@@ -5,10 +5,10 @@ import { KnexService } from '@feathersjs/knex'
 
 import { BadRequest } from '@feathersjs/errors'
 import type { Application } from '../../declarations'
+import { DollarOffCampaign, SpecialPriceCampaign } from '../campaigns/campaigns.types'
+import { calculateDollarOff, calculateSpecialPrice } from './orders.helper'
 import type { Orders, OrdersData, OrdersPatch, OrdersQuery } from './orders.schema'
 import { CalculateCampaign, ScanPayload } from './orders.types'
-import { CalculateSpecialPrice } from './orders.helper'
-import { SpecialPriceCampaign } from '../campaigns/campaigns.types'
 
 export type { Orders, OrdersData, OrdersPatch, OrdersQuery }
 
@@ -56,36 +56,32 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
       .find({ query: { orderId: id, productSku, $limit: 1 } })
     const hasLineItem = lineItemResult.total > 0
 
-    let newQuantity = 1
-    let total: string
+    const lineItem = hasLineItem ? lineItemResult.data[0] : null
+    const newQuantity = lineItem ? lineItem.quantity + 1 : 1
 
-    if (hasLineItem) {
-      const lineItem = lineItemResult.data[0]
-      newQuantity = lineItem.quantity + 1
+    const lineItemTotal = this.calculateLineItemTotal({
+      quantity: newQuantity,
+      price: product.price,
+      campaign
+    })
 
-      total = this.calculateLineItemTotal({
-        quantity: newQuantity,
-        price: product.price,
-        campaign
-      })
-
+    if (hasLineItem && lineItem) {
       await this.app.service('line-items').patch(
         lineItem.id,
         {
           quantity: newQuantity,
-          total
+          total: lineItemTotal
         },
         { query: { orderId: id, productSku } }
       )
     } else {
       // add create new line item
-      // todo add calculate discount
       await this.app.service('line-items').create({
         orderId: id,
         productSku,
         price: product.price,
-        quantity: 1,
-        total: product.price
+        quantity: newQuantity,
+        total: lineItemTotal
       })
     }
 
@@ -114,13 +110,26 @@ export class OrdersService<ServiceParams extends Params = OrdersParams> extends 
 
     switch (campaign.type) {
       case 'specialPrice':
+        const specialPriceCampaign = campaign as SpecialPriceCampaign
+
         if (quantity >= campaign.requiredProductQuantity!) {
-          total = CalculateSpecialPrice({
+          total = calculateSpecialPrice({
             quantity,
             price,
-            campaign: campaign as SpecialPriceCampaign
+            campaign: specialPriceCampaign
           })
         }
+        break
+
+      case 'dollarOff':
+        const dollarOffCampaign = campaign as DollarOffCampaign
+
+        total = calculateDollarOff({
+          quantity,
+          price,
+          campaign: dollarOffCampaign
+        })
+
         break
     }
 

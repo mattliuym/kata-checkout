@@ -20,10 +20,10 @@ export const campaignsSchema = {
     type: { type: 'string', enum: type },
     requiredProductSku: { type: ['string', 'null'] },
     requiredProductQuantity: { type: 'number' },
-    targetProductSku: { type: 'string' },
-    targetProductQuantity: { type: 'number' },
+    targetProductSku: { type: 'string' }, // Not in use for now
+    targetProductQuantity: { type: 'number' }, // Not in use for now
     specialPrice: { type: 'string' },
-    amountOff: { type: 'number' },
+    dollarOff: { type: 'string' },
     percentageOff: { type: 'number' },
     isActive: { type: 'boolean' },
     ...timestampDataSchema.properties
