@@ -1,7 +1,6 @@
 import {
   Box,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
@@ -24,7 +23,6 @@ const OrderDetails: React.FC<Props> = ({ order }) => {
   return (
     <TableContainer>
       <Table variant="simple">
-        <TableCaption>Imperial to metric conversion factors</TableCaption>
         <Thead>
           <Tr>
             <Th>Order Details</Th>
